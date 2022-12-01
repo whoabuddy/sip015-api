@@ -1,4 +1,7 @@
-import { Transaction } from "@stacks/stacks-blockchain-api-types";
+import {
+  AddressStxBalanceResponse,
+  Transaction,
+} from "@stacks/stacks-blockchain-api-types";
 import { StacksMainnet } from "micro-stacks/network";
 import throttledQueue from "throttled-queue";
 
@@ -87,6 +90,13 @@ export interface StxVoteData {
 
 export interface StxInvalidVoteReasons {
   [key: string]: string;
+}
+
+export interface StxInvalidVoteStats {
+  totalInvalidVotes: number;
+  totalsByReason: {
+    [key: string]: number;
+  };
 }
 
 // overall vote object, stored in KV

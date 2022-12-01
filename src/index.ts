@@ -1,4 +1,4 @@
-import { dbgLog, Env, StxVoteMethodData } from "./utils";
+import { dbgLog, Env, StxInvalidVoteStats, StxVoteMethodData } from "./utils";
 
 const simpleRouter = async (
   request: Request,
@@ -28,7 +28,9 @@ const simpleRouter = async (
     case "/addresses": {
       dbgLog("fetching key from KV");
       const key = await env.sip015_index.get("sip015-stx-knownaddresses");
-      return key ? new Response(key) : new Response("not found");
+      return key
+        ? new Response(key)
+        : new Response("not found", { status: 404 });
     }
     /* TODO: better router for matching query param here
     case "/view-user-data": {
@@ -49,7 +51,7 @@ const simpleRouter = async (
       );
       return value && metadata
         ? new Response(JSON.stringify(metadata))
-        : new Response("not found");
+        : new Response("not found", { status: 404 });
     }
     case "/method2-vote-details": {
       dbgLog("fetching key from KV");
@@ -66,6 +68,33 @@ const simpleRouter = async (
         };
         return new Response(JSON.stringify(compiled));
       }
+      return new Response("not found", { status: 404 });
+    }
+    case "/method2-invalid-votes": {
+      dbgLog("fetching key from KV");
+      const { value, metadata } = await env.sip015_index.getWithMetadata(
+        "sip015-stx-method2-vote",
+        {
+          type: "json",
+        }
+      );
+      if (value && metadata) {
+        const voteData = value as StxVoteMethodData;
+        const invalidVoteStats: StxInvalidVoteStats = {
+          totalInvalidVotes: Object.keys(voteData.invalidVotes).length,
+          totalsByReason: {},
+        };
+        const invalidVoteReasons = voteData.invalidVoteReasons;
+        for (const [key, value] of Object.entries(invalidVoteReasons)) {
+          if (invalidVoteStats.totalsByReason[value]) {
+            invalidVoteStats.totalsByReason[value] += 1;
+          } else {
+            invalidVoteStats.totalsByReason[value] = 1;
+          }
+        }
+        return new Response(JSON.stringify(invalidVoteStats, null, 2));
+      }
+      return new Response("not found", { status: 404 });
     }
     default:
       return new Response(
@@ -74,6 +103,7 @@ const simpleRouter = async (
           /addresses - returns all known voting addresses in Cloudflare KV store
           /method2-vote - returns compiled vote stats for SIP-015
           /method2-vote-details - returns compiled vote data for SIP-015
+          /method2-invalid-votes - returns stats on invalid votes for SIP-015
           / - returns this page`
       );
   }
