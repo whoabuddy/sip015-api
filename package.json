@@ -1,6 +1,6 @@
 {
   "name": "sip015-api",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20221111.1",
     "@stacks/stacks-blockchain-api-types": "^6.2.1",
@@ -10,7 +10,8 @@
   "private": true,
   "scripts": {
     "start": "wrangler dev",
-    "deploy": "wrangler publish"
+    "deploy": "wrangler publish",
+    "deploy:prod": "wrangler publish --env production"
   },
   "dependencies": {
     "micro-stacks": "^1.1.4",
