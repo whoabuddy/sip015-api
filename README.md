@@ -22,4 +22,4 @@ Unsupported routes will display the index page.
 - `/method2-invalid-votes` - returns stats on invalid votes for SIP-015
 - `/` or invalid path - returns this info
 
-Types for each object queried can be found in [utils.ts](./utils.ts).
+Types for each object queried can be found in [utils.ts](./src/utils.ts).
