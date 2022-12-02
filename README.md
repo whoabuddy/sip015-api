@@ -20,6 +20,8 @@ Unsupported routes will display the index page.
 - `/method2-vote` - returns compiled vote stats for SIP-015
 - `/method2-vote-details` - returns compiled vote data for SIP-015
 - `/method2-invalid-votes` - returns stats on invalid votes for SIP-015
+- `/method2-yes-votes` - returns transactions and stats on yes votes for SIP-015
+- `/method2-no-votes` - returns transactions and stats on no votes for SIP-015
 - `/` or invalid path - returns this info
 
 Types for each object queried can be found in [utils.ts](./src/utils.ts).

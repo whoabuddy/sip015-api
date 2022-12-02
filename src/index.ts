@@ -1,4 +1,11 @@
-import { dbgLog, Env, StxInvalidVoteStats, StxVoteMethodData } from "./utils";
+import {
+  dbgLog,
+  Env,
+  StxInvalidVoteStats,
+  StxVoteMethodData,
+  STX_ADDRESS_NO,
+  STX_ADDRESS_YES,
+} from "./utils";
 
 const simpleRouter = async (
   request: Request,
@@ -70,6 +77,40 @@ const simpleRouter = async (
       }
       return new Response("not found", { status: 404 });
     }
+    case "/method2-yes-votes": {
+      dbgLog("fetching key from KV");
+      const { value, metadata } = await env.sip015_index.getWithMetadata(
+        `sip015-stx-votetxs-${STX_ADDRESS_YES}`,
+        {
+          type: "json",
+        }
+      );
+      if (value && metadata) {
+        const compiled = {
+          txs: value,
+          metadata: metadata,
+        };
+        return new Response(JSON.stringify(compiled));
+      }
+      return new Response("not found", { status: 404 });
+    }
+    case "/method2-no-votes": {
+      dbgLog("fetching key from KV");
+      const { value, metadata } = await env.sip015_index.getWithMetadata(
+        `sip015-stx-votetxs-${STX_ADDRESS_NO}`,
+        {
+          type: "json",
+        }
+      );
+      if (value && metadata) {
+        const compiled = {
+          txs: value,
+          metadata: metadata,
+        };
+        return new Response(JSON.stringify(compiled));
+      }
+      return new Response("not found", { status: 404 });
+    }
     case "/method2-invalid-votes": {
       dbgLog("fetching key from KV");
       const { value, metadata } = await env.sip015_index.getWithMetadata(
@@ -103,6 +144,8 @@ const simpleRouter = async (
           /addresses - returns all known voting addresses in Cloudflare KV store
           /method2-vote - returns compiled vote stats for SIP-015
           /method2-vote-details - returns compiled vote data for SIP-015
+          /method2-yes-votes - returns indexed transactions and stats on yes votes for SIP-015
+          /method2-no-votes - returns indexed transactions and stats on no votes for SIP-015
           /method2-invalid-votes - returns stats on invalid votes for SIP-015
           / - returns this page`
       );
